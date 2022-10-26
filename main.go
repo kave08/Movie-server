@@ -59,7 +59,7 @@ func main() {
 	log.Fatal(http.ListenAndServe("8000", r))
 }
 
-func getMovie(w http.ResponseWriter, r *http.Request) {
+func getMovies(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(movies)
 }
@@ -70,7 +70,19 @@ func deleteMovie(w http.ResponseWriter, r *http.Request) {
 	for index, item := range movies {
 
 		if item.ID == param["id"] {
-			movies = append(movies[:index])
+			movies = append(movies[:index], movies[index+1:]...)
+		}
+	}
+	json.NewEncoder(w).Encode(movies)
+}
+
+func getMovie(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	param := mux.Vars(r)
+	for _, item := range movies {
+		if item.ID == param["id"] {
+			json.NewEncoder(w).Encode(item)
+			return
 		}
 	}
 }
